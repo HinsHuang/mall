@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--    windows下路径, D:\downloads\xxx.jar-->
+    <classPathEntry location="D:\softwares\jar\mysql-connector-java-5.1.6.jar" />
+
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+
+        <!--        不再追加xml内容-->
+        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin" />
+
+        <!-- 不生成comment -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!--数据库链接地址账号密码-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/mall?characterEncoding=utf-8"
+                        userId="root"
+                        password="qq135310">
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!--生成pojo存放位置-->
+        <!-- targetPackage： 生成实体类所在的包 -->
+        <!-- targetProject： 生成实体类所在的硬盘位置 -->
+        <javaModelGenerator targetPackage="com.imooc.mall.pojo" targetProject="src/main/java">
+            <!-- 是否允许子包 -->
+            <property name="enableSubPackages" value="true" />
+            <!--            <property name="trimStrings" value="true" />-->
+        </javaModelGenerator>
+
+        <!--生成映射文件存放位置-->
+        <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+            <!-- 针对数据库的一个配置，是否把 schema 作为包名 -->
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <!--生成Dao类存放位置  也就是生成接口所在的位置 -->
+        <!-- 客户端代码，生成易于使用的针对Model对象和XML配置文件 的代码
+                type="ANNOTATEDMAPPER",生成Java Model 和基于注解的Mapper对象
+                type="MIXEDMAPPER",生成基于注解的Java Model 和相应的Mapper对象
+                type="XMLMAPPER",生成SQLMap XML文件和独立的Mapper接口 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.imooc.mall.dao"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <!--生成对应表及类名，这里每一个表的五项属性是为了删除自动编写的复杂查询-->
+        <!-- tableName: 对应的是数据库表名，domainObjectName： 是实体类的名字，可以自定义-->
+<!--        <table tableName="mall_order" domainObjectName="Order"-->
+<!--               enableCountByExample="false"-->
+<!--               enableDeleteByExample="false"-->
+<!--               enableSelectByExample="false"-->
+<!--               enableUpdateByExample="false"/>-->
+
+<!--        <table tableName="mall_order_item" domainObjectName="OrderItem"-->
+<!--               enableCountByExample="false"-->
+<!--               enableDeleteByExample="false"-->
+<!--               enableSelectByExample="false"-->
+<!--               enableUpdateByExample="false"/>-->
+
+        <!--        <table tableName="mall_user" domainObjectName="User" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false"/>-->
+        <!--        <table tableName="mall_category" domainObjectName="Category" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false"/>-->
+        <!--        <table tableName="mall_product" domainObjectName="Product" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false">-->
+        <!--            <columnOverride column="detail" jdbcType="VARCHAR" />-->
+        <!--            <columnOverride column="sub_images" jdbcType="VARCHAR" />-->
+        <!--        </table>-->
+        <!--        <table tableName="mall_shipping" domainObjectName="Shipping" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false"/> -->
+
+<!--            <table tableName="mall_pay_info" domainObjectName="PayInfo" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false"/>-->
+
+<!--                <table tableName="mall_user" domainObjectName="User"-->
+<!--                       enableCountByExample="false"-->
+<!--                       enableDeleteByExample="false"-->
+<!--                       enableSelectByExample="false"-->
+<!--                       enableUpdateByExample="false"/>-->
+
+<!--        <table tableName="mall_category" domainObjectName="Category"-->
+<!--               enableCountByExample="false"-->
+<!--               enableDeleteByExample="false"-->
+<!--               enableSelectByExample="false"-->
+<!--               enableUpdateByExample="false"/>-->
+
+        <table tableName="mall_product" domainObjectName="Product"
+               enableCountByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               enableUpdateByExample="false">
+
+            <columnOverride column="sub_images" jdbcType="VARCHAR" />
+            <columnOverride column="detail" jdbcType="VARCHAR" />
+        </table>
+
+
+    </context>
+</generatorConfiguration>

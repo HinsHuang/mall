@@ -1,0 +1,17 @@
+# 应用服务 WEB 访问端口
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: qq135310
+    url: jdbc:mysql://127.0.0.1:3306/mall?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+
+# 把数据表的下划线转换成java的驼峰格式
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    #控制台输出标准SQL
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # mapper xml文件路径
+  mapper-locations: classpath:mapper/*.xml
+
