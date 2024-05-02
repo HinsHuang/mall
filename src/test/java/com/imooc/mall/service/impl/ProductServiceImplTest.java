@@ -24,7 +24,8 @@ public class ProductServiceImplTest extends MallApplicationTest {
 
     @Test
     public void detail() {
-        ResponseVo<ProductDetailVo> detail = productService.detail(28);
-        log.info("detail={}", detail);
+        ResponseVo<ProductDetailVo> responseVo = productService.detail(28);
+        log.info("detail={}", responseVo);
+        Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), responseVo.getStatus());
     }
 }
