@@ -14,7 +14,7 @@ public class RuntimeExceptionHandler {
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
-    public ResponseVo handleRuntimeException(Exception ex) {
+    public ResponseVo runtimeExceptionHandle(Exception ex) {
         return ResponseVo.error(ResponseEnum.ERROR, ex.getMessage());
     }
 
@@ -26,7 +26,7 @@ public class RuntimeExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
-    public ResponseVo notValidException(MethodArgumentNotValidException ex) {
+    public ResponseVo notValidExceptionHandle(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         return ResponseVo.error(ResponseEnum.PARAM_ERROR, bindingResult);
     }
