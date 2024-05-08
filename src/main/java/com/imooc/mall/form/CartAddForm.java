@@ -12,4 +12,8 @@ public class CartAddForm {
 
     private Boolean selected = true;
 
+    public CartAddForm(@NotNull Integer productId, Boolean selected) {
+        this.productId = productId;
+        this.selected = selected;
+    }
 }

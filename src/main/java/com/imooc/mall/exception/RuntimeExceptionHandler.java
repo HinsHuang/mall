@@ -31,5 +31,4 @@ public class RuntimeExceptionHandler {
         return ResponseVo.error(ResponseEnum.PARAM_ERROR, bindingResult);
     }
 
-
 }

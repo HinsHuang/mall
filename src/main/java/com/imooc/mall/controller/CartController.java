@@ -13,7 +13,7 @@ import javax.validation.Valid;
 public class CartController {
 
     @PostMapping("/carts")
-    public ResponseVo<CartVo> add(@Valid @RequestBody CartAddForm form) {
+    public ResponseVo<CartVo> add(@Valid @RequestBody CartAddForm cartAddForm) {
 
         return null;
     }
