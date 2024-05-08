@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Data
 public class Product {
+
     private Integer id;
 
     private Integer categoryId;

@@ -5,6 +5,9 @@ spring:
     username: root
     password: qq135310
     url: jdbc:mysql://127.0.0.1:3306/mall?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
+  redis:
+    host: 127.0.0.7
+    port: 6379
 
 # 把数据表的下划线转换成java的驼峰格式
 mybatis:
@@ -14,4 +17,3 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   # mapper xml文件路径
   mapper-locations: classpath:mapper/*.xml
-

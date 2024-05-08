@@ -21,4 +21,6 @@ public interface ProductMapper {
 
     List<Product> selectByCategoryIdSet(@Param("categoryIdSet") Set<Integer> CategoryIdSet);
 
+    List<Product> selecctByProductIdSet(@Param("productIdSet") Set<Integer> productIdSet);
+
 }
