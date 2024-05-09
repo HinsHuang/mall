@@ -5,6 +5,7 @@ import com.imooc.mall.dao.ProductMapper;
 import com.imooc.mall.enums.ProductStatusEnum;
 import com.imooc.mall.enums.ResponseEnum;
 import com.imooc.mall.form.CartAddForm;
+import com.imooc.mall.form.CartUpdateForm;
 import com.imooc.mall.pojo.Cart;
 import com.imooc.mall.pojo.Product;
 import com.imooc.mall.service.CartService;
@@ -57,12 +58,12 @@ public class CartServiceImpl implements CartService {
         HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
         String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
         String productId = String.valueOf(product.getId());
-        String value = opsForHash.get(redisKey, productId);
+        String cartJson = opsForHash.get(redisKey, productId);
         Cart cart;
-        if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isEmpty(cartJson)) {
             cart = new Cart(cartAddForm.getProductId(), quantity, cartAddForm.getSelected());
         } else {
-            cart = gson.fromJson(value, Cart.class);
+            cart = gson.fromJson(cartJson, Cart.class);
             cart.setQuantity(cart.getQuantity() + quantity);
         }
 
@@ -83,44 +84,81 @@ public class CartServiceImpl implements CartService {
             productIdSet.add(Integer.valueOf(entry.getKey()));
         }
 
-        List<Product> productList = productMapper.selecctByProductIdSet(productIdSet);
-        CartVo cartVo = new CartVo();
-        List<CartProductVo> cartProductVoList = new ArrayList<>();
-        Boolean selectedAll = true;
-        Integer cartTotalQuantity = 0;
-        BigDecimal cartTotalPrice = BigDecimal.ZERO;
-        for (Product product : productList) {
-            String value = opsForHash.get(redisKey, String.valueOf(product.getId()));
-            Cart cart = gson.fromJson(value, Cart.class);
-            CartProductVo cartProductVo = new CartProductVo(
-                    product.getId(),
-                    cart.getQuantity(),
-                    product.getName(),
-                    product.getSubtitle(),
-                    product.getMainImage(),
-                    product.getPrice(),
-                    product.getStatus(),
-                    product.getPrice().multiply(BigDecimal.valueOf(cart.getQuantity())),
-                    product.getStock(),
-                    cart.getProductSelected()
-                    );
-            cartProductVoList.add(cartProductVo);
+        CartVo cartVo = null;
+        if (productIdSet.size() > 0) {
+            cartVo = new CartVo();
+            List<Product> productList = productMapper.selecctByProductIdSet(productIdSet);
+            List<CartProductVo> cartProductVoList = new ArrayList<>();
+            Boolean selectedAll = true;
+            Integer cartTotalQuantity = 0;
+            BigDecimal cartTotalPrice = BigDecimal.ZERO;
+            for (Product product : productList) {
+                String cartJson = entries.get(String.valueOf(product.getId()));
+                Cart cart = gson.fromJson(cartJson, Cart.class);
+                CartProductVo cartProductVo = new CartProductVo(
+                        product.getId(),
+                        cart.getQuantity(),
+                        product.getName(),
+                        product.getSubtitle(),
+                        product.getMainImage(),
+                        product.getPrice(),
+                        product.getStatus(),
+                        product.getPrice().multiply(BigDecimal.valueOf(cart.getQuantity())),
+                        product.getStock(),
+                        cart.getProductSelected()
+                );
+                cartProductVoList.add(cartProductVo);
 
-            if (!cart.getProductSelected()) {
-                selectedAll = false;
+                if (!cart.getProductSelected()) {
+                    selectedAll = false;
+                }
+
+                if (cart.getProductSelected()) {
+                    cartTotalPrice = cartTotalPrice.add(cartProductVo.getProductTotalPrice());
+                }
+
+                cartTotalQuantity += cart.getQuantity();
             }
 
-            if (cart.getProductSelected()) {
-                cartTotalPrice = cartTotalPrice.add(product.getPrice().multiply(BigDecimal.valueOf(cart.getQuantity())));
-            }
+            cartVo.setCartProductVoList(cartProductVoList);
+            cartVo.setSelectedAll(selectedAll);
+            cartVo.setCartTotalPrice(cartTotalPrice);
+            cartVo.setCartTotalQuantity(cartTotalQuantity);
+        }
+        return ResponseVo.success(cartVo);
+    }
 
-            cartTotalQuantity += cart.getQuantity();
+    @Override
+    public ResponseVo<CartVo> update(Integer uid, Integer productId, CartUpdateForm cartUpdateForm) {
+        HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
+        String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
+        String cartJson = opsForHash.get(redisKey, String.valueOf(productId));
+        if (StringUtils.isEmpty(cartJson)) {
+            return ResponseVo.error(ResponseEnum.CART_PRODUCT_NOT_EXIST);
         }
 
-        cartVo.setCartProductVoList(cartProductVoList);
-        cartVo.setSelectedAll(selectedAll);
-        cartVo.setCartTotalPrice(cartTotalPrice);
-        cartVo.setCartTotalQuantity(cartTotalQuantity);
-        return ResponseVo.success(cartVo);
+        Cart cart = gson.fromJson(cartJson, Cart.class);
+        if (cartUpdateForm.getQuantity() != null && cartUpdateForm.getQuantity() > 0) {
+            cart.setQuantity(cartUpdateForm.getQuantity());
+        }
+        if (cartUpdateForm.getSelected() != null) {
+            cart.setProductSelected(cartUpdateForm.getSelected());
+        }
+
+        opsForHash.put(redisKey, String.valueOf(productId), gson.toJson(cart));
+        return list(uid);
+    }
+
+    @Override
+    public ResponseVo<CartVo> delete(Integer uid, Integer productId) {
+        HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
+        String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
+        String cartJson = opsForHash.get(redisKey, String.valueOf(productId));
+        if (StringUtils.isEmpty(cartJson)) {
+            return ResponseVo.error(ResponseEnum.CART_PRODUCT_NOT_EXIST);
+        }
+
+        opsForHash.delete(redisKey, String.valueOf(productId));
+        return list(uid);
     }
 }

@@ -28,12 +28,13 @@ public class UserServiceImplTest extends MallApplicationTest {
     @Before
     public void register() {
         User user = new User(USERNAME,PASSWORD,EMAIL, RoleEnum.CUSTOMER.getCode());
-        userService.register(user);
+        ResponseVo<User> responseVo = userService.register(user);
+        Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), responseVo.getStatus());
     }
 
     @Test
     public void login() {
-        ResponseVo<User> userResponseVo = userService.login(USERNAME, PASSWORD);
-        Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), userResponseVo.getStatus());
+        ResponseVo<User> responseVo = userService.login(USERNAME, PASSWORD);
+        Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), responseVo.getStatus());
     }
 }
