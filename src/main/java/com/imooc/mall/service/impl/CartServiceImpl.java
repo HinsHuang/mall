@@ -161,4 +161,56 @@ public class CartServiceImpl implements CartService {
         opsForHash.delete(redisKey, String.valueOf(productId));
         return list(uid);
     }
+
+    @Override
+    public ResponseVo<CartVo> selectAll(Integer uid) {
+        HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
+        String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
+        List<Cart> cartList = listForCart(uid);
+        for (Cart cart : cartList) {
+            cart.setProductSelected(true);
+            opsForHash.put(redisKey, String.valueOf(cart.getProductId()), gson.toJson(cart));
+        }
+
+        return list(uid);
+    }
+
+    @Override
+    public ResponseVo<CartVo> unSelectAll(Integer uid) {
+        HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
+        String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
+        List<Cart> cartList = listForCart(uid);
+        for (Cart cart : cartList) {
+            cart.setProductSelected(false);
+            opsForHash.put(redisKey, String.valueOf(cart.getProductId()), gson.toJson(cart));
+        }
+
+        return list(uid);
+    }
+
+    @Override
+    public ResponseVo<Integer> sum(Integer uid) {
+        HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
+        String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
+        Map<String, String> entries = opsForHash.entries(redisKey);
+        Integer cartTotalQuantity = 0;
+        List<Cart> cartList = listForCart(uid);
+        for (Cart cart : cartList) {
+            cartTotalQuantity += cart.getQuantity();
+        }
+
+        return ResponseVo.success(cartTotalQuantity);
+    }
+
+    private List<Cart> listForCart(Integer uid) {
+        HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
+        String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
+        Map<String, String> entries = opsForHash.entries(redisKey);
+        List<Cart> cartList = new ArrayList<>();
+        for (Map.Entry<String, String> entry : entries.entrySet()) {
+            Cart cart = gson.fromJson(entry.getValue(), Cart.class);
+            cartList.add(cart);
+        }
+        return cartList;
+    }
 }
