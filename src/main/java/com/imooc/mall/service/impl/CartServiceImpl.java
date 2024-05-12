@@ -166,8 +166,7 @@ public class CartServiceImpl implements CartService {
     public ResponseVo<CartVo> selectAll(Integer uid) {
         HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
         String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
-        List<Cart> cartList = listForCart(uid);
-        for (Cart cart : cartList) {
+        for (Cart cart : listForCart(uid)) {
             cart.setProductSelected(true);
             opsForHash.put(redisKey, String.valueOf(cart.getProductId()), gson.toJson(cart));
         }
@@ -179,8 +178,7 @@ public class CartServiceImpl implements CartService {
     public ResponseVo<CartVo> unSelectAll(Integer uid) {
         HashOperations<String, String, String> opsForHash = redisTemplate.opsForHash();
         String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
-        List<Cart> cartList = listForCart(uid);
-        for (Cart cart : cartList) {
+        for (Cart cart : listForCart(uid)) {
             cart.setProductSelected(false);
             opsForHash.put(redisKey, String.valueOf(cart.getProductId()), gson.toJson(cart));
         }
@@ -194,8 +192,7 @@ public class CartServiceImpl implements CartService {
         String redisKey = String.format(CART_REDIS_KEY_TEMPLATE, uid);
         Map<String, String> entries = opsForHash.entries(redisKey);
         Integer cartTotalQuantity = 0;
-        List<Cart> cartList = listForCart(uid);
-        for (Cart cart : cartList) {
+        for (Cart cart : listForCart(uid)) {
             cartTotalQuantity += cart.getQuantity();
         }
 
