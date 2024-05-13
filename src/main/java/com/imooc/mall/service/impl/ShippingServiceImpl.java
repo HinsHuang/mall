@@ -37,12 +37,25 @@ public class ShippingServiceImpl implements ShippingService {
 
     @Override
     public ResponseVo delete(Integer uid, Integer shippingId) {
-        return null;
+        int row = shippingMapper.deleteByIdAndUid(uid, shippingId);
+        if (row == 0) {
+            return ResponseVo.error(ResponseEnum.DELETE_SHIPPING_FAIL);
+        }
+        return ResponseVo.success();
     }
 
     @Override
     public ResponseVo update(Integer uid, Integer shippingId, ShippingForm shippingForm) {
-        return null;
+        Shipping shipping = shippingMapper.selectByIdAndUid(uid, shippingId);
+        if (shipping == null) {
+            return ResponseVo.error(ResponseEnum.SHIPPING_NOT_EXIST);
+        }
+        BeanUtils.copyProperties(shippingForm, shipping);
+        int row = shippingMapper.updateByPrimaryKeySelective(shipping);
+        if (row == 0) {
+            return ResponseVo.error(ResponseEnum.ERROR);
+        }
+        return ResponseVo.success();
     }
 
     @Override

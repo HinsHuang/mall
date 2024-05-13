@@ -5,13 +5,13 @@ import com.imooc.mall.enums.ResponseEnum;
 import com.imooc.mall.form.ShippingForm;
 import com.imooc.mall.vo.ResponseVo;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 @Slf4j
 public class ShippingServiceImplTest extends MallApplicationTest {
@@ -23,8 +23,9 @@ public class ShippingServiceImplTest extends MallApplicationTest {
 
     private Integer shippingId;
 
-    @Test
-    public void add() {
+    private ShippingForm form;
+
+    private void init() {
         ShippingForm shippingForm = new ShippingForm();
         shippingForm.setReceiverAddress("广州");
         shippingForm.setReceiverCity("广州");
@@ -34,17 +35,31 @@ public class ShippingServiceImplTest extends MallApplicationTest {
         shippingForm.setReceiverZip("524431");
         shippingForm.setReceiverName("辉哥");
         shippingForm.setReceiverProvince("广东");
-        ResponseVo<Map<String, Integer>> responseVo = shippingService.add(uid, shippingForm);
+        this.form = shippingForm;
+    }
+
+    @Before
+    public void add() {
+        init();
+        ResponseVo<Map<String, Integer>> responseVo = shippingService.add(uid, form);
+        shippingId = responseVo.getData().get("shippingId");
+        log.info("ResponseVo={}", responseVo);
+        Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), responseVo.getStatus());
+    }
+
+    @After
+    public void delete() {
+        ResponseVo responseVo = shippingService.delete(uid, shippingId);
         log.info("ResponseVo={}", responseVo);
         Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), responseVo.getStatus());
     }
 
     @Test
-    public void delete() {
-    }
-
-    @Test
     public void update() {
+        form.setReceiverProvince("北京");
+        ResponseVo responseVo = shippingService.update(uid, shippingId, form);
+        log.info("ResponseVo={}", responseVo);
+        Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), responseVo.getStatus());
     }
 
     @Test
