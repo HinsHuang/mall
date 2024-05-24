@@ -64,5 +64,8 @@ public class ShippingServiceImplTest extends MallApplicationTest {
 
     @Test
     public void list() {
+        ResponseVo responseVo = shippingService.list(uid, 1, 10);
+        log.info("ResponseVo={}", responseVo);
+        Assert.assertEquals(ResponseEnum.SUCCESS.getCode(), responseVo.getStatus());
     }
 }
